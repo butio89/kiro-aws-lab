@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "記事保存時に自動ビルド",
+      "trigger": "PostFileSave",
+      "description": "content/posts の Markdown を保存すると静的サイトを自動で再ビルドする",
+      "matcher": "content[\\\\/]posts[\\\\/].*\\.md$",
+      "action": {
+        "type": "command",
+        "command": "node docs/scripts/build.mjs",
+        "timeout": 60
+      }
+    }
+  ]
+}

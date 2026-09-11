@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kiroで「AIに記事を手伝わせる技術ブログ」をゼロから作ってみた | Kiro × AWS ラボ</title>
+  <meta name="description" content="AI開発ツール Kiro の steering と hooks を使って、記事作成をAIに手伝わせる技術ブログ基盤をゼロから作った制作記。依存ゼロの静的サイト構成と、実際に使ってみた感想までまとめます。" />
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="../index.html">Kiro <span>×</span> AWS ラボ</a>
+      <nav class="nav">
+        <a href="../index.html">記事一覧</a>
+      </nav>
+    </div>
+  </header>
+  
+  <main class="article">
+    <div class="container">
+      <a class="back-link" href="../index.html">← 記事一覧へ戻る</a>
+      <div class="article-header">
+        <h1>Kiroで「AIに記事を手伝わせる技術ブログ」をゼロから作ってみた</h1>
+        <div class="meta">2026-09-12</div>
+        <div class="tags"><span class="tag">Kiro</span><span class="tag">ブログ運営</span><span class="tag">静的サイト</span><span class="tag">AI</span></div>
+      </div>
+      <div class="article-body">
+        <h2>はじめに</h2>
+<p>この記事は、AI開発ツール <strong>Kiro</strong> だけを使って「AIに記事作成を手伝わせる技術ブログ」の基盤をゼロから作った制作記です。対象読者は、Kiroを触り始めたエンジニアや、AIにブログ運営を手伝わせたいと考えている人です。</p>
+<p>先に結論を書くと、<strong>追加パッケージのインストールなし・Kiroとの対話だけで、記事を書ける状態まで作れました</strong>。ここでは全体像、作り方、そして実際に使ってみた感想を順に紹介します。</p>
+<h2>作ったもの</h2>
+<p>作ったのは次の2つです。</p>
+<ul>
+<li><strong>依存ゼロの静的ブログ</strong>：Markdownで記事を書き、Node標準機能だけでHTMLに変換する</li>
+<li><strong>AI記事作成ワークフロー</strong>：Kiroにブログの方針とルールを教え、「テーマ→構成→下書き」を手伝わせる仕組み</li>
+</ul>
+<p>ディレクトリ構成はこうなっています。</p>
+<pre><code>toybox/
+├─ content/posts/        ← 記事の元Markdown（ここに書く）
+├─ site/                 ← 公開する静的サイト
+│  ├─ index.html         ← 記事一覧（自動生成）
+│  ├─ posts/             ← 記事HTML（自動生成）
+│  ├─ assets/style.css   ← デザイン
+│  └─ scripts/build.mjs  ← Markdown→HTMLビルダー
+├─ templates/            ← 構成・下書きの雛形
+└─ .kiro/
+   ├─ steering/          ← ブログ方針・記事ルール・AI手順
+   └─ hooks/             ← 保存時に自動ビルド</code></pre>
+<h2>なぜKiroで作るのか</h2>
+<p>Kiroには <strong>steering</strong>（AIに常時参照させるルール）と <strong>hooks</strong>（イベントで処理を自動実行する仕組み）があります。この2つのおかげで、単に「コードを書いてもらう」以上のことができます。</p>
+<ul>
+<li>steeringにブログの方針や記事ルールを書いておくと、AIが毎回それに沿って記事を作ってくれる</li>
+<li>hooksで定型作業（ビルドなど）を自動化できる</li>
+</ul>
+<p>つまり、<strong>自分の運営ルールをAIに覚えさせて、それを守らせながら記事を量産できる</strong>わけです。</p>
+<h2>作り方①：静的サイトのビルダー</h2>
+<p>まずは記事を表示する仕組みです。凝ったフレームワークは使わず、Node標準機能だけでMarkdownをHTMLに変換するビルダーを書きました。狙いは「依存ゼロ」で、環境構築に悩まないことです。</p>
+<p>記事の先頭にはフロントマターでメタ情報を書きます。</p>
+<pre><code>---
+title: 記事タイトル
+date: 2026-09-12
+tags: [Kiro, AWS]
+excerpt: 一覧に表示する要約
+---
+
+## 本文はここから</code></pre>
+<p>あとはビルドコマンドを叩くだけで、記事一覧ページと各記事ページが生成されます。</p>
+<pre><code class="language-bash">node docs/scripts/build.mjs</code></pre>
+<h2>作り方②：steeringでブログ方針とルールをAIに教える</h2>
+<p>ここがこの仕組みの核です。<code>.kiro/steering/</code> に3つのルールファイルを置きました。</p>
+<table>
+<tr><th>ファイル</th><th>役割</th></tr>
+<tr><td>blog-strategy.md</td><td>誰に何を発信するか（読者像・カテゴリ・収益方針）</td></tr>
+<tr><td>article-rules.md</td><td>記事の品質基準・SEO・アフィリエイトの法令順守ルール</td></tr>
+<tr><td>ai-article-workflow.md</td><td>AIが記事を作るときの手順（テーマ→構成→下書き）</td></tr>
+</table>
+<p>特に意識したのは、<strong>アフィリエイトの法令順守を最初からルールに組み込む</strong>ことです。PR表記の必須化や、AIが生成しただけの記事をそのまま公開しない（人間が必ず事実確認する）といった点を明文化しました。ここを後回しにすると、規約違反やペナルティのリスクが高くなるためです。</p>
+<h2>作り方③：hookで保存時に自動ビルド</h2>
+<p>記事を書くたびに手でビルドコマンドを打つのは面倒です。そこで <code>PostFileSave</code> のhookを作り、<code>content/posts/</code> のMarkdownを保存したら自動でビルドが走るようにしました。</p>
+<pre><code class="language-json">{
+  "trigger": "PostFileSave",
+  "matcher": "content[\\/]posts[\\/].*\\.md$",
+  "action": { "type": "command", "command": "node docs/scripts/build.mjs" }
+}</code></pre>
+<p>これで「書いて保存する」だけでサイトが更新されます。</p>
+<h2>実際に使ってみた</h2>
+<p>対話しながら進めて、基盤づくりにかかったのは <strong>30分ほど</strong>でした。フレームワークの選定や環境構築で悩む時間がなかったぶん、あっという間だった印象です。</p>
+<p>一番の気づきは、<strong>steeringにルールを書いておくと、AIが本当にそれを守って書いてくれる</strong>ことでした。記事の見出しの付け方やアフィリエイトのPR表記といった細かいルールも、毎回指示し直さなくても自動的に反映されます。運営ルールを一度言語化してしまえば、あとはそれに沿って量産できる感覚がつかめました。</p>
+<p>そのほか良かった点は次のとおりです。</p>
+<ul>
+<li>構成案を先に出してくれるので、いきなり本文を書くより方向性がぶれない</li>
+<li>毎回同じ品質基準で書いてくれるので、記事ごとの当たり外れが少ない</li>
+</ul>
+<p>一方で注意が必要だと感じた点もあります。</p>
+<ul>
+<li><strong>AIの下書きは必ず自分で確認・加筆する必要がある</strong>。特に体験談や数値は一次情報なので、AI任せにはできない</li>
+<li>生成された内容をそのまま公開すると、事実と違う記述が混ざるリスクがある</li>
+</ul>
+<h2>学習に使った教材（PR）</h2>
+<p>Kiro × AWS で開発を進めるなら、AWSの基礎知識があると理解がぐっと速くなります。体系的に学ぶなら講座や書籍が近道でした。</p>
+<div class="affiliate-box">
+<div class="label">PR</div>
+<h4>AWS入門におすすめの講座・書籍（後日リンク差し替え）</h4>
+<p>クラウドの基礎からハンズオンで学べる教材。Kiroで作ったものをAWSに載せる前に一通り触れておくと、つまずきが減ります。</p>
+<a class="btn" href="#" rel="nofollow sponsored noopener" target="_blank">詳細を見る</a>
+</div>
+<h2>まとめ</h2>
+<p>Kiroのsteeringとhooksを使って、AIに記事作成を手伝わせる技術ブログ基盤をゼロから作りました。ポイントは、<strong>運営ルールをsteeringに明文化してAIに守らせる</strong>ことと、<strong>最終的な事実確認は人間がやる</strong>という役割分担です。</p>
+<p>次はこのサイトをAWS（S3 + CloudFront）に公開して、その構築過程をまた記事にしていきます。</p>
+      </div>
+    </div>
+  </main>
+  <footer class="site-footer">
+    <div class="container">
+      <div>© 2026 Kiro × AWS ラボ</div>
+      <div class="disclosure">
+        当サイトはアフィリエイトプログラムを利用しており、リンク経由の購入で報酬を得る場合があります。
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

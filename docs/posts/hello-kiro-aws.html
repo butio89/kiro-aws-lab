@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kiro × AWS で技術ブログを作り始めた話 | Kiro × AWS ラボ</title>
+  <meta name="description" content="AI開発ツール Kiro と AWS を使って、この技術ブログ自体をどう作っているかを記録していく最初の記事です。" />
+  <link rel="stylesheet" href="../assets/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a class="brand" href="../index.html">Kiro <span>×</span> AWS ラボ</a>
+      <nav class="nav">
+        <a href="../index.html">記事一覧</a>
+      </nav>
+    </div>
+  </header>
+  
+  <main class="article">
+    <div class="container">
+      <a class="back-link" href="../index.html">← 記事一覧へ戻る</a>
+      <div class="article-header">
+        <h1>Kiro × AWS で技術ブログを作り始めた話</h1>
+        <div class="meta">2026-09-12</div>
+        <div class="tags"><span class="tag">Kiro</span><span class="tag">AWS</span><span class="tag">ブログ運営</span></div>
+      </div>
+      <div class="article-body">
+        <h2>はじめに</h2>
+<p>この記事は、AI開発ツール <strong>Kiro</strong> と <strong>AWS</strong> を使いながら、技術ブログを立ち上げていく過程を記録する最初の1本です。ブログのテーマは「実際に作りながら学ぶ」こと。作ったものがそのまま記事になる、という循環を目指しています。</p>
+<h2>なぜ Kiro を使うのか</h2>
+<p>Kiro は spec や hooks といった仕組みで、開発ワークフローを構造化できるのが特徴です。この記事の下書きも、Kiro に構成を考えてもらいながら書いています。</p>
+<ul>
+<li>テーマを渡すと記事構成を提案してくれる</li>
+<li>下書きを書いてくれる（最終的な確認は人間がやる）</li>
+<li>定型作業を hook で自動化できる</li>
+</ul>
+<h2>このブログの構成</h2>
+<p>依存ゼロの静的サイトとして作っています。Markdown を書いてビルドすると HTML になり、AWS の S3 + CloudFront にそのまま置ける形です。</p>
+<pre><code class="language-bash"># 記事を書いたらビルド
+node docs/scripts/build.mjs</code></pre>
+<h2>おすすめの学習リソース</h2>
+<p>これから AWS を学ぶ人向けに、実際に役立った教材を紹介します。</p>
+<div class="affiliate-box">
+<div class="label">おすすめ教材</div>
+<h4>ここに紹介する講座・書籍のタイトルが入ります</h4>
+<p>この枠がアフィリエイトの紹介ボックスです。ASPで取得したリンクを下のボタンに設定してください。</p>
+<a class="btn" href="#" rel="nofollow sponsored noopener" target="_blank">詳細を見る（PR）</a>
+</div>
+<h2>まとめ</h2>
+<p>まずは仕組みを作りました。次の記事では、実際に Kiro で AWS のサーバーレス構成を作る過程を書いていきます。</p>
+      </div>
+    </div>
+  </main>
+  <footer class="site-footer">
+    <div class="container">
+      <div>© 2026 Kiro × AWS ラボ</div>
+      <div class="disclosure">
+        当サイトはアフィリエイトプログラムを利用しており、リンク経由の購入で報酬を得る場合があります。
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

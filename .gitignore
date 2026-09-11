@@ -1,0 +1,12 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+
+# Node（依存は使わないが念のため）
+node_modules/
+npm-debug.log*
+
+# 注意: docs/ の生成物（index.html, posts/*.html）は
+# GitHub Pages で配信するため、あえてコミットする（ignoreしない）。
