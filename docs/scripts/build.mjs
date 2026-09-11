@@ -29,7 +29,7 @@ const SITE_TAGLINE = "AI開発ツール Kiro と AWS で、実際に作りなが
 // Google Analytics 4 の測定ID（G-XXXXXXXXXX 形式）。
 // ここに直接書くか、環境変数 GA_MEASUREMENT_ID で渡す。
 // 空のままだと計測タグは出力されない（ローカルで無駄に計測しないため）。
-const GA_MEASUREMENT_ID = process.env.GA_MEASUREMENT_ID || "";
+const GA_MEASUREMENT_ID = process.env.GA_MEASUREMENT_ID || "G-M9VW0HZ77K";
 
 // ---------- ユーティリティ ----------
 function escapeHtml(s) {
