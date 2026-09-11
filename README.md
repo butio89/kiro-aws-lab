@@ -128,7 +128,13 @@ $env:GA_MEASUREMENT_ID = "G-XXXXXXXXXX"; node docs/scripts/build.mjs
 
 ### Search Console（SEO用・推奨）
 
-検索キーワードや順位を見るには [Google Search Console](https://search.google.com/search-console) にもサイトを登録します。GA4と連携済みのGoogleアカウントなら、所有権確認をスムーズに済ませられます。
+検索キーワードや順位、インデックス状況を見るには [Google Search Console](https://search.google.com/search-console) にサイトを登録します。
+
+1. プロパティ追加で **「URLプレフィックス」** を選び、`https://butio89.github.io/kiro-aws-lab/` を入力（「ドメイン」は選ばない）
+2. 所有権確認は **「Googleアナリティクス」** を選ぶ（GA4と同じGoogleアカウントならワンクリックで完了）
+3. 確認後、左メニュー「サイトマップ」で `sitemap.xml` を送信する
+
+サイトマップ（`docs/sitemap.xml`）と `docs/robots.txt` はビルド時に自動生成されます。記事を追加してビルドすれば、サイトマップも自動で更新されます。Search Consoleには一度送信すれば、以降はGoogleが定期的に再クロールします。
 
 ## この先のロードマップ
 

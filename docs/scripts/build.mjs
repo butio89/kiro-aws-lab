@@ -31,6 +31,9 @@ const SITE_TAGLINE = "AI開発ツール Kiro と AWS で、実際に作りなが
 // 空のままだと計測タグは出力されない（ローカルで無駄に計測しないため）。
 const GA_MEASUREMENT_ID = process.env.GA_MEASUREMENT_ID || "G-M9VW0HZ77K";
 
+// 公開サイトのベースURL（末尾スラッシュあり）。sitemap.xml の生成に使う。
+const SITE_URL = "https://butio89.github.io/kiro-aws-lab/";
+
 // ---------- ユーティリティ ----------
 function escapeHtml(s) {
   return s
@@ -293,6 +296,40 @@ ${items || '        <li class="post-card"><p class="excerpt">まだ記事があ�
   return layout({ title: `${SITE_NAME}`, bodyHtml: body, isArticle: false });
 }
 
+// ---------- sitemap.xml / robots.txt ----------
+function writeSitemap(posts) {
+  const urls = [
+    { loc: SITE_URL, lastmod: posts[0]?.meta.date || "" },
+    ...posts.map((p) => ({
+      loc: `${SITE_URL}posts/${p.slug}.html`,
+      lastmod: p.meta.date || "",
+    })),
+  ];
+  const body = urls
+    .map((u) => {
+      const lastmod = u.lastmod ? `\n    <lastmod>${u.lastmod}</lastmod>` : "";
+      return `  <url>\n    <loc>${u.loc}</loc>${lastmod}\n  </url>`;
+    })
+    .join("\n");
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${body}
+</urlset>
+`;
+  writeFileSync(join(ROOT, "docs", "sitemap.xml"), xml, "utf8");
+  console.log("  生成: docs/sitemap.xml");
+}
+
+function writeRobots() {
+  const txt = `User-agent: *
+Allow: /
+
+Sitemap: ${SITE_URL}sitemap.xml
+`;
+  writeFileSync(join(ROOT, "docs", "robots.txt"), txt, "utf8");
+  console.log("  生成: docs/robots.txt");
+}
+
 // ---------- ビルド実行 ----------
 function build() {
   if (!existsSync(CONTENT_DIR)) {
@@ -322,6 +359,9 @@ function build() {
 
   writeFileSync(INDEX_OUT, renderIndex(posts), "utf8");
   console.log(`  生成: docs/index.html （記事 ${posts.length} 件）`);
+
+  writeSitemap(posts);
+  writeRobots();
   console.log("ビルド完了。");
 }
 
