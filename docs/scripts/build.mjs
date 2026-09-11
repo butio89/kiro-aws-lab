@@ -26,6 +26,11 @@ const INDEX_OUT = join(ROOT, "docs", "index.html");
 const SITE_NAME = "Kiro × AWS ラボ";
 const SITE_TAGLINE = "AI開発ツール Kiro と AWS で、実際に作りながら学ぶ技術ブログ。";
 
+// Google Analytics 4 の測定ID（G-XXXXXXXXXX 形式）。
+// ここに直接書くか、環境変数 GA_MEASUREMENT_ID で渡す。
+// 空のままだと計測タグは出力されない（ローカルで無駄に計測しないため）。
+const GA_MEASUREMENT_ID = process.env.GA_MEASUREMENT_ID || "";
+
 // ---------- ユーティリティ ----------
 function escapeHtml(s) {
   return s
@@ -180,6 +185,20 @@ function markdownToHtml(md) {
   return out.join("\n");
 }
 
+// ---------- Google Analytics 4 タグ ----------
+function analyticsTag() {
+  if (!GA_MEASUREMENT_ID) return "";
+  return `
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '${GA_MEASUREMENT_ID}');
+  </script>`;
+}
+
 // ---------- HTMLテンプレート ----------
 function layout({ title, description, bodyHtml, isArticle }) {
   return `<!DOCTYPE html>
@@ -189,7 +208,7 @@ function layout({ title, description, bodyHtml, isArticle }) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${escapeHtml(title)}</title>
   <meta name="description" content="${escapeHtml(description || SITE_TAGLINE)}" />
-  <link rel="stylesheet" href="${isArticle ? "../assets/style.css" : "assets/style.css"}" />
+  <link rel="stylesheet" href="${isArticle ? "../assets/style.css" : "assets/style.css"}" />${analyticsTag()}
 </head>
 <body>
   <header class="site-header">

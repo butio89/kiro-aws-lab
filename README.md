@@ -104,6 +104,32 @@ Kiroは以下を参照して記事を作ります。方針を変えたいとき�
 </div>
 ```
 
+## アクセス解析（Google Analytics 4）
+
+全ページにGA4の計測タグを自動で埋め込む仕組みが入っています。測定IDを設定するとタグが出力され、未設定なら出力されません（ローカルでの無駄な計測を防ぐため）。
+
+### 測定IDの取得手順
+
+1. [Google Analytics](https://analytics.google.com/) にログイン
+2. 「管理」→「プロパティを作成」→ サイト名などを入力
+3. データストリームで「ウェブ」を選び、サイトURL（`https://butio89.github.io/kiro-aws-lab/`）を登録
+4. 発行される **測定ID（`G-XXXXXXXXXX` 形式）** をコピー
+
+### 設定方法（どちらか）
+
+- `docs/scripts/build.mjs` の `GA_MEASUREMENT_ID` に直接書く
+- もしくはビルド時に環境変数で渡す:
+
+```powershell
+$env:GA_MEASUREMENT_ID = "G-XXXXXXXXXX"; node docs/scripts/build.mjs
+```
+
+設定後にビルド → コミット → プッシュすると、公開サイトで計測が始まります。
+
+### Search Console（SEO用・推奨）
+
+検索キーワードや順位を見るには [Google Search Console](https://search.google.com/search-console) にもサイトを登録します。GA4と連携済みのGoogleアカウントなら、所有権確認をスムーズに済ませられます。
+
 ## この先のロードマップ
 
 - レベル1（現在）: Kiro内でAIに記事を手伝ってもらい、静的サイトを手元でビルド。
